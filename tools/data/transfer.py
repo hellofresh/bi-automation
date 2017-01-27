@@ -50,9 +50,7 @@ if __name__ == '__main__':
     print "\nRead the above input and confirm typing yes"
     choice = raw_input().lower()
 
-    if choice in ['yes', 'YES']:
-        pass
-    else:
+    if choice not in ['yes']:
         raise Exception("STOOOOOP IT!!!")
 
     origin_server = servers.from_conf(args.origin_server)
