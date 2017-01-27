@@ -47,7 +47,7 @@ if __name__ == '__main__':
     print "To: {}".format(args.target_server)
     print "Path: {}".format(args.target_path)
 
-    print "\nRead the above input and confirm typing yes"
+    print '\nRead the above input and confirm typing "yes"'
     choice = raw_input().lower()
 
     if choice not in ['yes']:
@@ -89,7 +89,7 @@ if __name__ == '__main__':
     )
 
     # we have the content, yay, now move it to final dir.
-    copy_content_final_dest = "cd {} && sudo cp -rp . {}".format(
+    copy_content_final_dest = "cd {} && sudo mv -rp . {}".format(
         transfer_path, args.target_path
     )
 
