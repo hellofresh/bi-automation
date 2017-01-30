@@ -33,7 +33,19 @@ def parse_input_arguments():
         help='Define from which server we need to put the data'
     )
 
+    arg_parser.add_argument(
+        '--username', dest='username', required=False,
+        help='Define a different username', default=None
+    )
+
     return arg_parser.parse_args()
+
+
+def create_server(host, username=None):
+    if not username:
+        return servers.from_conf(host)
+
+    return servers.Server(host, username)
 
 
 if __name__ == '__main__':
@@ -43,6 +55,8 @@ if __name__ == '__main__':
     task_id = uuid.uuid1()
 
     print "Task ID: {}".format(str(task_id))
+    if args.username:
+        print "Username: {}".format(args.username)
     print "From: {}".format(args.origin_server)
     print "Copy: {}".format(args.origin_path)
     print "To: {}".format(args.target_server)
@@ -54,7 +68,7 @@ if __name__ == '__main__':
     if choice not in ['yes']:
         raise Exception("STOOOOOP IT!!!")
 
-    origin_server = servers.from_conf(args.origin_server)
+    origin_server = create_server(args.origin_server, args.username)
     transfer_path = "~/.transfer/{}".format(task_id)
 
     create_data_dir = 'mkdir -p {}'.format(transfer_path)
@@ -80,7 +94,7 @@ if __name__ == '__main__':
 
     # I have the data in my local
     # create target local user dir
-    target_server = servers.from_conf(args.target_server)
+    target_server = create_server(args.target_server, args.username)
     create_data_dir = 'mkdir -p {}'.format(transfer_path)
     target_server.run(create_data_dir)
 
