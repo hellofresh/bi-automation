@@ -86,10 +86,14 @@ if __name__ == '__main__':
 
     os.makedirs(local_dir)
 
+    with_username = ""
+    if args.username:
+        with_username = "{}@".format(args.username)
+
     print "Pulling data"
     os.system(
-        "scp -rp {}:{}/. {}".format(
-            args.origin_server, transfer_path, local_dir)
+        "scp -rp {}{}:{}/. {}".format(
+            with_username, args.origin_server, transfer_path, local_dir)
     )
 
     # I have the data in my local
@@ -100,8 +104,8 @@ if __name__ == '__main__':
 
     print "Pushing data"
     os.system(
-        "scp -r {}/. {}:{}".format(
-            local_dir, args.target_server, transfer_path
+        "scp -r {}/. {}{}:{}".format(
+            local_dir, with_username, args.target_server, transfer_path
         )
     )
 
