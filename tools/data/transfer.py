@@ -3,6 +3,7 @@
 """
 import uuid
 import os
+import shutil
 
 from argparse import ArgumentParser
 
@@ -71,8 +72,9 @@ if __name__ == '__main__':
 
     os.makedirs(local_dir)
 
+    print "Pulling data"
     os.system(
-        "scp -rp {}:{}/. {}/.".format(
+        "scp -rp {}:{}/. {}".format(
             args.origin_server, transfer_path, local_dir)
     )
 
@@ -82,15 +84,27 @@ if __name__ == '__main__':
     create_data_dir = 'mkdir -p {}'.format(transfer_path)
     target_server.run(create_data_dir)
 
+    print "Pushing data"
     os.system(
-        "scp -r {}/. {}:{}/.".format(
+        "scp -r {}/. {}:{}".format(
             local_dir, args.target_server, transfer_path
         )
     )
 
     # we have the content, yay, now move it to final dir.
-    copy_content_final_dest = "cd {} && sudo mv -rp . {}".format(
+    copy_content_final_dest = "cd {} && sudo cp -rp . {}".format(
         transfer_path, args.target_path
     )
 
     target_server.run(copy_content_final_dest)
+
+    # Remove data from everywhere
+    print 'Remove all generated data? type "yes"'
+    choice = raw_input().lower()
+
+    if choice in ['yes']:
+        remove_transfer_path = 'rm -fr {}'.format(transfer_path)
+        shutil.rmtree(local_dir)
+        origin_server.run(remove_transfer_path)
+        target_server.run(remove_transfer_path)
+
