@@ -24,18 +24,23 @@ def parse_input_arguments():
     )
 
     arg_parser.add_argument(
-        '--target-path', dest='target_path', required=True,
+        '--target-path', dest='target_path', required=False,
         help='Define where to transfer that data'
     )
 
     arg_parser.add_argument(
-        '--target-server', dest='target_server', required=True,
+        '--target-server', dest='target_server', required=False,
         help='Define from which server we need to put the data'
     )
 
     arg_parser.add_argument(
         '--username', dest='username', required=False,
         help='Define a different username', default=None
+    )
+
+    arg_parser.add_argument(
+        '--only-local', dest='only_local', required=False,
+        default=False, help='True if it should only download to your local'
     )
 
     return arg_parser.parse_args()
@@ -59,8 +64,12 @@ if __name__ == '__main__':
         print "Username: {}".format(args.username)
     print "From: {}".format(args.origin_server)
     print "Copy: {}".format(args.origin_path)
-    print "To: {}".format(args.target_server)
-    print "Path: {}".format(args.target_path)
+
+    if args.only_local:
+        print "Stored in local only"
+    else:
+        print "To: {}".format(args.target_server)
+        print "Path: {}".format(args.target_path)
 
     print '\nRead the above input and confirm typing "yes"'
     choice = raw_input().lower()
@@ -95,6 +104,10 @@ if __name__ == '__main__':
         "scp -rp {}{}:{}/. {}".format(
             with_username, args.origin_server, transfer_path, local_dir)
     )
+
+    if args.only_local:
+        print "Done! data located {}".format(local_dir)
+        exit()
 
     # I have the data in my local
     # create target local user dir
