@@ -3,6 +3,8 @@ import glob
 import boto
 import math
 
+from datetime import datetime
+
 
 class PathNotFound(Exception):
     pass
@@ -15,6 +17,7 @@ class S3Uploader(object):
         self.__aws_key_id = aws_key_id
         self.__aws_bucket = None
         self.__aws_connection = None
+        self.__date = datetime.now().strftime('%Y_%m_%d')
 
     @property
     def bucket(self):
@@ -33,6 +36,7 @@ class S3Uploader(object):
 
         for file_in_dir in glob.glob('{}/*'.format(path)):
             self.upload_file(file_in_dir)
+            exit()
 
     def upload_file(self, path):
         if not os.path.exists(path):
@@ -40,10 +44,11 @@ class S3Uploader(object):
                 '{path} has not been found'.format(path=path)
             )
 
-        bucket = self.__get_bucket()
-        file_name = os.path.join('testing-stuff', os.path.basename(path))
+        print path
 
-        key = bucket.new_key(file_name)
+        bucket = self.__get_bucket()
+        file_name = os.path.join(self.__date, os.path.basename(path))
+
         multi_part = bucket.initiate_multipart_upload(file_name)
 
         source_size = os.stat(path).st_size
@@ -88,11 +93,3 @@ class S3Uploader(object):
         )
 
         return self.__aws_connection
-
-uploader = S3Uploader(
-    os.environ['AWS_ACCESS_KEY_ID'],
-    os.environ['AWS_SECRET_ACCESS_KEY'],
-    'dwh-hdfs-backups'
-)
-
-uploader.upload_by_path('/Users/ssola/datawarehouse-env/dwh-dev/repositories/backups')
