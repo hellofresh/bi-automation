@@ -10,11 +10,21 @@ class PathNotFound(Exception):
     pass
 
 
-class S3Uploader(object):
-    def __init__(self, aws_key_id, aws_secret_key, bucket):
-        self.__bucket = bucket
+class S3Connection(object):
+    def __init__(self, aws_key_id, aws_secret_key):
         self.__aws_secret_key = aws_secret_key
         self.__aws_key_id = aws_key_id
+
+    def create(self):
+        return boto.connect_s3(
+            self.__aws_key_id, self.__aws_secret_key
+        )
+
+
+class S3Uploader(object):
+    def __init__(self, s3_connexion, bucket):
+        self.__bucket = bucket
+        self.__s3_connexion = s3_connexion
         self.__aws_bucket = None
         self.__aws_connection = None
         self.__date = datetime.now().strftime('%Y_%m_%d')
@@ -88,8 +98,6 @@ class S3Uploader(object):
         if self.__aws_connection:
             return self.__aws_connection
 
-        self.__aws_connection = boto.connect_s3(
-            self.__aws_key_id, self.__aws_secret_key
-        )
+        self.__aws_connection = self.__s3_connexion.create()
 
         return self.__aws_connection
