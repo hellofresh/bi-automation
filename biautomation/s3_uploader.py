@@ -44,8 +44,6 @@ class S3Uploader(object):
                 '{path} has not been found'.format(path=path)
             )
 
-        print path
-
         bucket = self.__get_bucket()
         file_name = os.path.join(self.__date, os.path.basename(path))
 
@@ -74,7 +72,7 @@ class S3Uploader(object):
             print "Upload done"
         else:
             multi_part.cancel_upload()
-            print "Upload file"
+            print "Upload failed"
 
     def __get_bucket(self):
         if self.__aws_bucket:
