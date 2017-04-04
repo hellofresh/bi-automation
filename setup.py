@@ -1,9 +1,11 @@
 from setuptools import setup, find_packages
 
 NAME = "biautomation"
-VERSION = "1.0.0"
+VERSION = "1.1.0"
 
-REQUIRES = []
+REQUIRES = [
+    'boto'
+]
 
 setup(
     name=NAME,
