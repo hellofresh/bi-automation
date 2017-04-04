@@ -24,9 +24,8 @@ class S3Connection(object):
 class S3Uploader(object):
     def __init__(self, s3_connexion, bucket):
         self.__bucket = bucket
-        self.__s3_connexion = s3_connexion
+        self.__s3_connexion = s3_connexion.create()
         self.__aws_bucket = None
-        self.__aws_connection = None
         self.__date = datetime.now().strftime('%Y_%m_%d')
 
     @property
@@ -90,14 +89,7 @@ class S3Uploader(object):
         if self.__aws_bucket:
             return self.__aws_bucket
 
-        self.__aws_bucket = self.__get_connection().get_bucket(self.__bucket)
+        self.__aws_bucket = self.__s3_connexion.get_bucket(self.__bucket)
 
         return self.__aws_bucket
 
-    def __get_connection(self):
-        if self.__aws_connection:
-            return self.__aws_connection
-
-        self.__aws_connection = self.__s3_connexion.create()
-
-        return self.__aws_connection
