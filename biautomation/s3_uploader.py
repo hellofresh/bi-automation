@@ -45,7 +45,6 @@ class S3Uploader(object):
 
         for file_in_dir in glob.glob('{}/*'.format(path)):
             self.upload_file(file_in_dir)
-            exit()
 
     def upload_file(self, path):
         if not os.path.exists(path):
