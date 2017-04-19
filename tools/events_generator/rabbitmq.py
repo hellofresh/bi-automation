@@ -18,15 +18,16 @@ class RabbitMQProducer(object):
             self.connection = pika.BlockingConnection(params)
             self.channel = self.connection.channel()
         except pika.exceptions.IncompatibleProtocolError as e:
-            return False
+            raise Exception('Incompatible Protocol Error')
         except pika.exceptions.ConnectionClosed as e:
-            return False
+            raise Exception('Connection Closed')
         except Exception as e:
-            return False
+            raise Exception('Exception connecting {}'.format(e.message))
 
     def send(self, payload, exchange_topic, routing_key):
         try:
             if exchange_topic not in self.declared_exchanges:
+                print 'creating exchange'
                 self.channel.exchange_declare(
                     exchange=exchange_topic, type='topic', durable=True
                 )
