@@ -13,6 +13,7 @@ class RabbitMQProducer(object):
     def connect(self):
         try:
             params = pika.URLParameters(self.url)
+            print self.url
             params.socket_timeout = 5
 
             self.connection = pika.BlockingConnection(params)
@@ -27,22 +28,24 @@ class RabbitMQProducer(object):
     def send(self, payload, exchange_topic, routing_key):
         try:
             if exchange_topic not in self.declared_exchanges:
-                print 'creating exchange'
                 self.channel.exchange_declare(
-                    exchange=exchange_topic, type='topic', durable=True
+                    exchange='dwh', type='topic', durable=True
                 )
                 self.declared_exchanges.append(exchange_topic)
 
+            print routing_key
             self.channel.basic_publish(
-                exchange=exchange_topic,
-                routing_key=routing_key,
-                body=json.dumps(payload)
+                exchange='dwh',
+                routing_key='test.events.staging',
+                body='stuff'
             )
         except pika.exceptions.IncompatibleProtocolError as e:
-            return False
+            raise Exception('IncompatibleProtocol')
         except pika.exceptions.ConnectionClosed as e:
-            return False
+            raise Exception('ConnectionClosed')
         except Exception as e:
-            return False
+            print e
+            exit()
+            raise Exception('Error: {}'.format(e.message))
 
         return True

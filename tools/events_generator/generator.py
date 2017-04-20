@@ -27,14 +27,16 @@ class EventGenerator(object):
         rabbit_connexion = RabbitMQProducer(self.rabbit_mq_url)
         rabbit_connexion.connect()
 
-        for i in xrange(0, 10000):
+        for i in xrange(0, number):
             print '[{}] Sending event'.format(str(i))
 
             rabbit_connexion.send(
-                {'data': 'data'},
+                payload,
                 self.exchange,
                 self.routing_key
             )
+
+        rabbit_connexion.connection.close()
 
     def __validate_input(self, number):
         if not isinstance(number, int):
@@ -51,6 +53,7 @@ if __name__ == '__main__':
     routing_key = ''
 
     event_generator = EventGenerator(
-        os.environ['RABBITMQ_URL'], 'dwh', 'dwh.test.events'
+        os.environ['RABBITMQ_URL'], 'dwh', 'test.events.staging'
     )
-    event_generator.send_events(number_of_events, [])
+
+    event_generator.send_events(number_of_events, {'data': 'some_data'})
