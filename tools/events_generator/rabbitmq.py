@@ -13,7 +13,6 @@ class RabbitMQProducer(object):
     def connect(self):
         try:
             params = pika.URLParameters(self.url)
-            print self.url
             params.socket_timeout = 5
 
             self.connection = pika.BlockingConnection(params)
@@ -33,7 +32,6 @@ class RabbitMQProducer(object):
                 )
                 self.declared_exchanges.append(exchange_topic)
 
-            print routing_key
             self.channel.basic_publish(
                 exchange=exchange_topic,
                 routing_key=routing_key,
@@ -44,8 +42,6 @@ class RabbitMQProducer(object):
         except pika.exceptions.ConnectionClosed as e:
             raise Exception('ConnectionClosed')
         except Exception as e:
-            print e
-            exit()
             raise Exception('Error: {}'.format(e.message))
 
         return True
