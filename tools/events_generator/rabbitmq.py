@@ -35,9 +35,9 @@ class RabbitMQProducer(object):
 
             print routing_key
             self.channel.basic_publish(
-                exchange='dwh',
-                routing_key='test.events.staging',
-                body='stuff'
+                exchange=exchange_topic,
+                routing_key=routing_key,
+                body=json.dumps(payload)
             )
         except pika.exceptions.IncompatibleProtocolError as e:
             raise Exception('IncompatibleProtocol')
