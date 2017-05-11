@@ -35,7 +35,7 @@ class RabbitMQProducer(object):
             self.channel.basic_publish(
                 exchange=exchange_topic,
                 routing_key=routing_key,
-                body=json.dumps(payload)
+                body=payload
             )
         except pika.exceptions.IncompatibleProtocolError as e:
             raise Exception('IncompatibleProtocol')

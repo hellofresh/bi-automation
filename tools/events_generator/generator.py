@@ -1,13 +1,17 @@
-"""Events Generator.
+"""Events Generator
 
 Usage:
-    generator.py run [--number=<ne>]
+    generator.py run [--number=<ne>] [--message=<kn>] [--routing-key=<kn>] [--rabbit-host=<kn>] [--exchange=<kn>]
     generator.py -h | --help
 
 Options:
-    --number=<ne>    Number of events to send to RabbitMQ [default: 10].
-    -h --help        Show this screen.
-    --version        Show version
+    --number=<ne>       Number of events to send to RabbitMQ [default: 10].
+    --message=<kn>      String with the json payload
+    --routing-key=<kn>  To which routing key send the message
+    --rabbit-host=<kn>  To which host connect to RabbitMQ
+    --exchange=<kn>     To which exchange to connect
+    -h --help           Show this screen.
+    --version           Show version
 """
 import os
 
@@ -46,14 +50,16 @@ class EventGenerator(object):
 
 
 if __name__ == '__main__':
-    arguments = docopt(__doc__, version='Events generator v1.0')
+    arguments = docopt(__doc__, version='Events generator v1.1')
 
     number_of_events = int(arguments.get('--number'))
-    channel = ''
-    routing_key = ''
+    exchange = arguments.get('--exchange')
+    routing_key = arguments.get('--routing-key')
+    host = arguments.get('--rabbit-host')
+    message = arguments.get('--message')
 
     event_generator = EventGenerator(
-        os.environ['RABBITMQ_URL'], 'dwh', 'test.events.staging'
+        host, exchange, routing_key
     )
 
-    event_generator.send_events(number_of_events, {'data': 'some_data'})
+    event_generator.send_events(number_of_events, message)
