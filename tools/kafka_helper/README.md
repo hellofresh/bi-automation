@@ -13,7 +13,7 @@ You can use this script as follows:
 `python consumer.py --servers=kafka000.staging.bi.hellofresh.io:9092,kafka001.staging.bi.hellofresh.io:9092 --topics=boxes_shipped_status`
 
 This will listen to production for all the events sent to the topic 
-`adjust_android`, you can listen to more than one topic separating each one 
+`boxes_shipped_status`, you can listen to more than one topic separating each one 
 by a comma.
 
 ### Produce Events
