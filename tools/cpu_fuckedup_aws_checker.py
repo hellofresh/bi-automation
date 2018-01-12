@@ -11,6 +11,8 @@ ec2 = boto3.client('ec2')
 instances = ec2.describe_instances()
 
 cant_connect = []
+safe = 0
+unsafe = 0
 
 def get_name(tags):
     for tag in tags:
@@ -37,7 +39,7 @@ for instance in parsed_instances:
     try:
         conn = servers.Server(instance['ip'], 'ssola', password='a')
     except Exception, e:
-        print "Can't connect to this one!!"
+        print stylize("Can't connect to this one!!", colored.fg("yellow"))
         cant_connect.append(instance)
         continue
 
@@ -65,9 +67,14 @@ for instance in parsed_instances:
             safe = True
 
     if safe:
+        safe += 1
         print stylize("IS IT SAFE! GO ON HAVE A BEER!", colored.fg("green"))
     else:
+        unsafe += 1
         print stylize("NOT PATCHED FOR MELTDOWN&SPECTRE", colored.fg("red"))
 
 print "You cannot connect to {} instances".format(len(cant_connect))
 print cant_connect
+
+print stylize("Safe instances: {}".format(safe), colored.fg("green"))
+print stylize("Unsafe instances: {}".format(unsafe), colored.fg("red"))
