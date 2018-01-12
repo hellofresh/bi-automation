@@ -7,30 +7,32 @@ from colored import stylize
 from sshed import servers
 
 
-ec2 = boto3.client('ec2')
-instances = ec2.describe_instances()
+ec2 = boto3.resource('ec2')
+instances = ec2.instances.filter(Filters=[{
+    'Name': 'instance-state-name',
+    'Values': ['running']}])
 
 cant_connect = []
 safe = 0
 unsafe = 0
 
 def get_name(tags):
-    for tag in tags:
-        if tag['Key'] == 'Name':
-            return tag['Value']
-    return False
+    name = ""
+    for tag in instance.tags:
+        if 'Name'in tag['Key']:
+            name = tag['Value']
+    return name
 
 parsed_instances = []
 
-for reservation in instances['Reservations']:
-    for instance in reservation['Instances']:
-        parsed_instances.append(
-            {
-                'id': instance['InstanceId'],
-                'name': get_name(instance['Tags']),
-                'ip': instance['PrivateIpAddress']
-            }
-        )
+for instance in instances:
+    parsed_instances.append(
+        {
+            'id': instance.instance_id,
+            'name': get_name(instance.tags),
+            'ip': instance.private_ip_address
+        }
+    )
 
 print "Start checking for fucked ups!"
 
@@ -77,4 +79,4 @@ print "You cannot connect to {} instances".format(len(cant_connect))
 print cant_connect
 
 print stylize("Safe instances: {}".format(safe), colored.fg("green"))
-print stylize("Unsafe instances: {}".format(unsafe), colored.fg("red"))
+print stylize("UnSafe instances: {}".format(unsafe), colored.fg("red"))
