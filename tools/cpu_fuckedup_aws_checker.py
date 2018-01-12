@@ -13,8 +13,8 @@ instances = ec2.instances.filter(Filters=[{
     'Values': ['running']}])
 
 cant_connect = []
-safe = 0
-unsafe = 0
+safe_total = 0
+unsafe_total = 0
 
 def get_name(tags):
     name = ""
@@ -39,7 +39,7 @@ print "Start checking for fucked ups!"
 for instance in parsed_instances:
     print "Connection to {} ({})".format(instance['name'], instance['ip'])
     try:
-        conn = servers.Server(instance['ip'], 'ssola', password='a')
+        conn = servers.Server(instance['ip'], password='nothing')
     except Exception, e:
         print stylize("Can't connect to this one!!", colored.fg("yellow"))
         cant_connect.append(instance)
@@ -69,14 +69,14 @@ for instance in parsed_instances:
             safe = True
 
     if safe:
-        safe += 1
+        safe_total += 1
         print stylize("IS IT SAFE! GO ON HAVE A BEER!", colored.fg("green"))
     else:
-        unsafe += 1
+        unsafe_total += 1
         print stylize("NOT PATCHED FOR MELTDOWN&SPECTRE", colored.fg("red"))
 
 print "You cannot connect to {} instances".format(len(cant_connect))
 print cant_connect
 
-print stylize("Safe instances: {}".format(safe), colored.fg("green"))
-print stylize("UnSafe instances: {}".format(unsafe), colored.fg("red"))
+print stylize("Safe instances: {}".format(safe_total), colored.fg("green"))
+print stylize("UnSafe instances: {}".format(unsafe_total), colored.fg("red"))
