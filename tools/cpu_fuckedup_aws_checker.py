@@ -1,3 +1,4 @@
+import os
 import boto3
 import re
 import colored
@@ -5,7 +6,10 @@ import colored
 from distutils.version import LooseVersion
 from colored import stylize
 from sshed import servers
+from slackclient import SlackClient
 
+slack_token = os.environ["SLACK_TOKEN"] if "SLACK_TOKEN" in os.environ else slack_token
+slack_client = SlackClient(slack_token)
 
 ec2 = boto3.resource('ec2')
 instances = ec2.instances.filter(Filters=[{
@@ -15,6 +19,7 @@ instances = ec2.instances.filter(Filters=[{
 cant_connect = []
 safe_total = 0
 unsafe_total = 0
+unsafe_instances = []
 
 def get_name(tags):
     name = ""
@@ -39,15 +44,21 @@ print "Start checking for fucked ups!"
 for instance in parsed_instances:
     print "Connection to {} ({})".format(instance['name'], instance['ip'])
     try:
-        conn = servers.Server(instance['ip'], password='nothing')
+        conn = servers.Server(instance['ip'], password='nothing', timeout=5)
     except Exception, e:
         print stylize("Can't connect to this one!!", colored.fg("yellow"))
         cant_connect.append(instance)
+        unsafe_instances.append(
+            instance
+        )
         continue
 
     distro_data = " ".join(conn.run('lsb_release -a').output)
     distro = re.findall('Distributor ID:	([a-zA-z]+)', distro_data)[0].strip()
     release = re.findall('Release:	([0-9\.]+)', distro_data)[0].strip()
+
+    instance['distro'] = distro
+    instance['release'] = release
 
     print "Running: {} Release: {}".format(distro, release)
 
@@ -65,13 +76,16 @@ for instance in parsed_instances:
                     break
     elif distro == "CentOS":
         kernel = conn.run('uname -r').output[0]
-        if LooseVersion(kernel) >= LooseVersion('3.10.0-514.26.2.el7.x86_64'):
+        if LooseVersion(kernel) >= LooseVersion('3.10.0-693.11.6.el7.x86_64'):
             safe = True
 
     if safe:
         safe_total += 1
         print stylize("IS IT SAFE! GO ON HAVE A BEER!", colored.fg("green"))
     else:
+        unsafe_instances.append(
+            instance
+        )
         unsafe_total += 1
         print stylize("NOT PATCHED FOR MELTDOWN&SPECTRE", colored.fg("red"))
 
@@ -80,3 +94,30 @@ print cant_connect
 
 print stylize("Safe instances: {}".format(safe_total), colored.fg("green"))
 print stylize("UnSafe instances: {}".format(unsafe_total), colored.fg("red"))
+
+fields = []
+for instance in unsafe_instances:
+    fields.append({
+        "title": "{} (Distro: {} Release: {})".format(
+            instance['name'],
+            instance['distro'],
+            instance['release'],
+        ),
+        "value": "IP: {}".format(instance['ip']),
+        "short": False
+    })
+
+slack_client.api_call(
+    "chat.postMessage",
+    channel='#squad-datawizards-dwh',
+    username="DWH-INFRA-GUARD",
+    icon_emoji=":guardsman:",
+    text="<@dwh> Some instances are not in good security health",
+    attachments=[
+        {
+            'title': 'This list of instances were not patched for Metldown&Spectre',
+            'color': 'warning',
+            "fields": fields
+        }
+    ]
+)
