@@ -20,3 +20,4 @@ Did I complete all the items in this checklist? Mark them when you did it.
 - [ ] I wrote the necessary documentation (README, ADR...)
 - [ ] I tested in my local dev machine that this code is running.
 - [ ] I did lint my code (Python/YAML/SQL)
+- [ ] I did bump the version *if needed*
