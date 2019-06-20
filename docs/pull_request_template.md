@@ -4,20 +4,15 @@
 
 **Description**: Help the reviewer to get the context of those changes.
 
-## TODO
-
-Still something missing? You can set some checklists in the ticket.
-
-- [x] Write unit tests.
-- [ ] Write documentation.
-
 ## Checklist
 
 Did I complete all the items in this checklist? Mark them when you did it.
 
-- [ ] I self-reviewed my code. 
+- [ ] I self-reviewed my code.
 - [ ] I wrote the necessary tests.
-- [ ] I wrote the necessary documentation (README, ADR...)
+- [ ] I wrote the necessary documentation (README, etl-doc, Alation)
 - [ ] I tested in my local dev machine that this code is running.
+- [ ] I didn't leave any sensitive (GDPR) information in test fixtures
 - [ ] I did lint my code (Python/YAML/SQL)
+- [ ] If repo is new, I used spark2. If repo is old I migrated to spark2
 - [ ] I did bump the version *if needed*
