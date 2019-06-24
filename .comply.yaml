@@ -4,24 +4,22 @@
 # information about this repo
 #
 #
-# description: |
-#   Enter here a brief and useful information about this code base
-
-contact: please-complete@hellofresh.com
+description: |
+  Public repository to help with ETL deployment.
+contact: dwh-platform@hellofresh.com
 known-name: bi-automation
-squad: please-complete
-tribe: please-complete
+squad: Data Platform
+tribe: Data Management
 # concourse-team: please-complete.please-complete
-# slack-channel: "#your-channel-here"
-# labels:
-# - label1
-# - label2
+slack-channel: "#squad-dwh-platform"
+labels:
+- automation
 # public_urls:
 # - http://my.url 
 # private_urls:
 # - http://my.url
 docs:
-- https://github.com/hellofresh/bi-automation
+- https://github.com/hellofresh/bi-automaton
 # dashboards:
 #   staging:
 #   - http://grafana.staging-k8s.hellofresh.io/d/1h55xOkWk/kubernetes-cluster-status
