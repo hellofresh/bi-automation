@@ -15,4 +15,5 @@ Did I complete all the items in this checklist? Mark them when you did it.
 - [ ] I didn't leave any sensitive (GDPR) information in test fixtures
 - [ ] I did lint my code (Python/YAML/SQL)
 - [ ] If repo is new, I used spark2. If repo is old I migrated to spark2
+- [ ] I added the necessary Data Quality checks
 - [ ] I did bump the version *if needed*
